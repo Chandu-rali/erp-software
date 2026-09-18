@@ -1,0 +1,666 @@
+import React, { useEffect, useState } from "react";
+
+const employees = [
+  {
+    id: "EMP001",
+    name: "Rahul Kumar",
+    department: "IT",
+    designation: "Software Developer",
+    email: "rahul@erpsoftware.com",
+    phone: "+91 9876543210",
+    joiningDate: "10-Jan-2023",
+    salary: "₹65,000",
+    status: "Active",
+  },
+  {
+    id: "EMP002",
+    name: "Priya Sharma",
+    department: "HR",
+    designation: "HR Manager",
+    email: "priya@erpsoftware.com",
+    phone: "+91 9876543211",
+    joiningDate: "15-Mar-2022",
+    salary: "₹75,000",
+    status: "Active",
+  },
+  {
+    id: "EMP003",
+    name: "Arjun Reddy",
+    department: "Finance",
+    designation: "Accountant",
+    email: "arjun@erpsoftware.com",
+    phone: "+91 9876543212",
+    joiningDate: "20-Jul-2023",
+    salary: "₹55,000",
+    status: "Active",
+  },
+  {
+    id: "EMP004",
+    name: "Sneha Reddy",
+    department: "IT",
+    designation: "UI Developer",
+    email: "sneha@erpsoftware.com",
+    phone: "+91 9876543213",
+    joiningDate: "05-Feb-2024",
+    salary: "₹60,000",
+    status: "Active",
+  },
+  {
+    id: "EMP005",
+    name: "Vikram Singh",
+    department: "Sales",
+    designation: "Sales Executive",
+    email: "vikram@erpsoftware.com",
+    phone: "+91 9876543214",
+    joiningDate: "12-Apr-2024",
+    salary: "₹45,000",
+    status: "Active",
+  },
+];
+
+const departments = [
+  { name: "IT", employees: 8, manager: "Rahul Kumar" },
+  { name: "HR", employees: 4, manager: "Priya Sharma" },
+  { name: "Finance", employees: 4, manager: "Arjun Reddy" },
+  { name: "Sales", employees: 5, manager: "Vikram Singh" },
+  { name: "Marketing", employees: 2, manager: "Anjali Rao" },
+  { name: "Operations", employees: 2, manager: "Kiran Kumar" },
+];
+
+function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [page, setPage] = useState("Dashboard");
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+  const login = (e) => {
+    e.preventDefault();
+
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    if (email === "admin@erpsoftware.com" && password === "admin123") {
+      setLoggedIn(true);
+      setPage("Dashboard");
+    } else {
+      alert("Invalid email or password");
+    }
+  };
+
+  const logout = () => {
+    setLoggedIn(false);
+    setPage("Dashboard");
+    setSelectedEmployee(null);
+  };
+
+  if (!loggedIn) {
+    return (
+      <div className="login-page">
+        <div className="login-image">
+          <div className="image-overlay">
+            <div className="company-logo-large">ERP</div>
+
+            <h1>ERP Software</h1>
+
+            <p>
+              Professional Employee Management
+              <br />
+              and Enterprise Resource Planning
+            </p>
+          </div>
+        </div>
+
+        <div className="login-form-section">
+          <div className="login-box">
+            <div className="company-logo">ERP</div>
+
+            <h2>Welcome Back</h2>
+            <p className="login-subtitle">
+              Sign in to ERP Software Private Limited
+            </p>
+
+            <form onSubmit={login}>
+              <label>Email Address</label>
+
+              <input
+                name="email"
+                type="email"
+                placeholder="Enter your email"
+                required
+              />
+
+              <label>Password</label>
+
+              <input
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                required
+              />
+
+              <button type="submit" className="login-button">
+                Login
+              </button>
+            </form>
+
+            <p className="demo-login">
+              Demo: admin@erpsoftware.com / admin123
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const openEmployee = (employee) => {
+    setSelectedEmployee(employee);
+    setPage("Employee Details");
+  };
+
+  const renderPage = () => {
+    if (page === "Dashboard") {
+      return (
+        <>
+          <div className="page-header">
+            <h1>Welcome to ERP Software</h1>
+            <p>Employee Management System</p>
+          </div>
+
+          <div className="dashboard-cards">
+            <div className="dashboard-card">
+              <h3>Total Employees</h3>
+              <strong>25</strong>
+            </div>
+
+            <div className="dashboard-card">
+              <h3>Departments</h3>
+              <strong>6</strong>
+            </div>
+
+            <div className="dashboard-card">
+              <h3>Present Today</h3>
+              <strong>22</strong>
+            </div>
+
+            <div className="dashboard-card">
+              <h3>Salary Slips</h3>
+              <strong>25</strong>
+            </div>
+          </div>
+
+          <div className="content-card">
+            <h2>Recent Employees</h2>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Employee ID</th>
+                  <th>Name</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {employees.slice(0, 3).map((employee) => (
+                  <tr key={employee.id}>
+                    <td>{employee.id}</td>
+
+                    <td>
+                      <button
+                        className="employee-link"
+                        onClick={() => openEmployee(employee)}
+                      >
+                        {employee.name}
+                      </button>
+                    </td>
+
+                    <td>{employee.department}</td>
+                    <td>{employee.designation}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      );
+    }
+
+    if (page === "Employees") {
+      return (
+        <>
+          <div className="page-header">
+            <h1>Employees</h1>
+            <p>Employee Management</p>
+          </div>
+
+          <div className="content-card">
+            <div className="section-title-row">
+              <h2>All Employees</h2>
+              <button className="primary-button">+ Add Employee</button>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Employee ID</th>
+                  <th>Name</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>Salary</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {employees.map((employee) => (
+                  <tr key={employee.id}>
+                    <td>{employee.id}</td>
+
+                    <td>
+                      <button
+                        className="employee-link"
+                        onClick={() => openEmployee(employee)}
+                      >
+                        {employee.name}
+                      </button>
+                    </td>
+
+                    <td>{employee.department}</td>
+                    <td>{employee.designation}</td>
+                    <td>{employee.salary}</td>
+
+                    <td>
+                      <span className="status-active">
+                        {employee.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      );
+    }
+
+    if (page === "Employee Details" && selectedEmployee) {
+      return (
+        <>
+          <div className="page-header">
+            <h1>Employee Details</h1>
+            <p>Complete employee information</p>
+          </div>
+
+          <div className="content-card employee-profile">
+            <button
+              className="back-button"
+              onClick={() => setPage("Employees")}
+            >
+              ← Back to Employees
+            </button>
+
+            <div className="employee-profile-header">
+              <div className="employee-avatar">
+                {selectedEmployee.name.charAt(0)}
+              </div>
+
+              <div>
+                <h2>{selectedEmployee.name}</h2>
+                <p>{selectedEmployee.designation}</p>
+                <span className="status-active">
+                  {selectedEmployee.status}
+                </span>
+              </div>
+            </div>
+
+            <div className="details-grid">
+              <div className="detail-box">
+                <span>Employee ID</span>
+                <strong>{selectedEmployee.id}</strong>
+              </div>
+
+              <div className="detail-box">
+                <span>Department</span>
+                <strong>{selectedEmployee.department}</strong>
+              </div>
+
+              <div className="detail-box">
+                <span>Designation</span>
+                <strong>{selectedEmployee.designation}</strong>
+              </div>
+
+              <div className="detail-box">
+                <span>Joining Date</span>
+                <strong>{selectedEmployee.joiningDate}</strong>
+              </div>
+
+              <div className="detail-box">
+                <span>Email</span>
+                <strong>{selectedEmployee.email}</strong>
+              </div>
+
+              <div className="detail-box">
+                <span>Phone</span>
+                <strong>{selectedEmployee.phone}</strong>
+              </div>
+
+              <div className="detail-box">
+                <span>Monthly Salary</span>
+                <strong>{selectedEmployee.salary}</strong>
+              </div>
+
+              <div className="detail-box">
+                <span>Employment Status</span>
+                <strong>{selectedEmployee.status}</strong>
+              </div>
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    if (page === "Departments") {
+      return (
+        <>
+          <div className="page-header">
+            <h1>Departments</h1>
+            <p>Company departments and managers</p>
+          </div>
+
+          <div className="department-grid">
+            {departments.map((department) => (
+              <div className="department-card" key={department.name}>
+                <div className="department-icon">
+                  {department.name.charAt(0)}
+                </div>
+
+                <h2>{department.name}</h2>
+
+                <p>
+                  <strong>{department.employees}</strong> Employees
+                </p>
+
+                <p>
+                  Manager: <strong>{department.manager}</strong>
+                </p>
+
+                <button
+                  className="view-button"
+                  onClick={() => alert(`${department.name} Department`)}
+                >
+                  View Department
+                </button>
+              </div>
+            ))}
+          </div>
+        </>
+      );
+    }
+
+    if (page === "Attendance") {
+      return (
+        <>
+          <div className="page-header">
+            <h1>Attendance</h1>
+            <p>Employee attendance management</p>
+          </div>
+
+          <div className="dashboard-cards">
+            <div className="dashboard-card">
+              <h3>Total Employees</h3>
+              <strong>25</strong>
+            </div>
+
+            <div className="dashboard-card">
+              <h3>Present</h3>
+              <strong>22</strong>
+            </div>
+
+            <div className="dashboard-card">
+              <h3>Absent</h3>
+              <strong>2</strong>
+            </div>
+
+            <div className="dashboard-card">
+              <h3>On Leave</h3>
+              <strong>1</strong>
+            </div>
+          </div>
+
+          <div className="content-card">
+            <h2>Today's Attendance</h2>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Employee ID</th>
+                  <th>Name</th>
+                  <th>Department</th>
+                  <th>Check In</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {employees.map((employee, index) => (
+                  <tr key={employee.id}>
+                    <td>{employee.id}</td>
+                    <td>{employee.name}</td>
+                    <td>{employee.department}</td>
+                    <td>{index === 2 ? "-" : "09:0" + (index + 1) + " AM"}</td>
+                    <td>
+                      <span className="status-active">
+                        {index === 2 ? "Absent" : "Present"}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      );
+    }
+
+    if (page === "Salary") {
+      return (
+        <>
+          <div className="page-header">
+            <h1>Salary Management</h1>
+            <p>Employee salary information</p>
+          </div>
+
+          <div className="content-card">
+            <div className="section-title-row">
+              <h2>Salary Details</h2>
+              <button className="primary-button">+ Process Salary</button>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Employee ID</th>
+                  <th>Name</th>
+                  <th>Department</th>
+                  <th>Basic Salary</th>
+                  <th>Net Salary</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {employees.map((employee) => (
+                  <tr key={employee.id}>
+                    <td>{employee.id}</td>
+                    <td>{employee.name}</td>
+                    <td>{employee.department}</td>
+                    <td>{employee.salary}</td>
+                    <td>{employee.salary}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      );
+    }
+
+    if (page === "Salary Slips") {
+      return (
+        <>
+          <div className="page-header">
+            <h1>Salary Slips</h1>
+            <p>Employee monthly salary slips</p>
+          </div>
+
+          <div className="content-card">
+            <h2>September 2026 Salary Slips</h2>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Employee ID</th>
+                  <th>Employee Name</th>
+                  <th>Month</th>
+                  <th>Net Salary</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {employees.map((employee) => (
+                  <tr key={employee.id}>
+                    <td>{employee.id}</td>
+                    <td>{employee.name}</td>
+                    <td>September 2026</td>
+                    <td>{employee.salary}</td>
+                    <td>
+                      <button
+                        className="view-button"
+                        onClick={() =>
+                          alert(
+                            `Salary Slip for ${employee.name}\n${employee.salary}`
+                          )
+                        }
+                      >
+                        View Slip
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      );
+    }
+
+    if (page === "Company Information") {
+      return (
+        <>
+          <div className="page-header">
+            <h1>Company Information</h1>
+            <p>ERP Software Private Limited</p>
+          </div>
+
+          <div className="content-card company-info">
+            <div className="company-info-logo">ERP</div>
+
+            <h2>ERP Software Private Limited</h2>
+
+            <p>
+              ERP Software Private Limited provides enterprise resource
+              planning and employee management solutions.
+            </p>
+
+            <div className="details-grid">
+              <div className="detail-box">
+                <span>Company Name</span>
+                <strong>ERP Software Private Limited</strong>
+              </div>
+
+              <div className="detail-box">
+                <span>Industry</span>
+                <strong>Information Technology</strong>
+              </div>
+
+              <div className="detail-box">
+                <span>Total Employees</span>
+                <strong>25</strong>
+              </div>
+
+              <div className="detail-box">
+                <span>Departments</span>
+                <strong>6</strong>
+              </div>
+
+              <div className="detail-box">
+                <span>Email</span>
+                <strong>info@erpsoftware.com</strong>
+              </div>
+
+              <div className="detail-box">
+                <span>Phone</span>
+                <strong>+91 90000 00000</strong>
+              </div>
+
+              <div className="detail-box">
+                <span>Website</span>
+                <strong>www.erpsoftware.com</strong>
+              </div>
+
+              <div className="detail-box">
+                <span>Location</span>
+                <strong>Hyderabad, India</strong>
+              </div>
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    return null;
+  };
+
+  const menuItems = [
+    "Dashboard",
+    "Employees",
+    "Departments",
+    "Attendance",
+    "Salary",
+    "Salary Slips",
+    "Company Information",
+  ];
+
+  return (
+    <div className="app-layout">
+      <aside className="sidebar">
+        <div className="sidebar-logo">ERP</div>
+
+        <h2>ERP SOFTWARE</h2>
+
+        <nav>
+          {menuItems.map((item) => (
+            <button
+              key={item}
+              className={`sidebar-link ${page === item ? "active" : ""}`}
+              onClick={() => {
+                setPage(item);
+                setSelectedEmployee(null);
+              }}
+            >
+              {item}
+            </button>
+          ))}
+        </nav>
+
+        <button className="logout-button" onClick={logout}>
+          Logout
+        </button>
+      </aside>
+
+      <main className="main-content">{renderPage()}</main>
+    </div>
+  );
+}
+
+export default App;

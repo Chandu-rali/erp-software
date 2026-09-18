@@ -1,0 +1,75 @@
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: erp-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - erp-network
+
+  backend:
+    build:
+      context: ./backend
+    container_name: erp-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_NAME: erp_db
+      DB_USER: erpuser
+      DB_PASSWORD: erppassword
+
+      JWT_SECRET: change-this-to-a-long-random-secret
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - erp-network
+
+  database:
+    image: mysql:8.0
+    container_name: erp-database
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: erp_db
+      MYSQL_USER: erpuser
+      MYSQL_PASSWORD: erppassword
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-uroot",
+          "-prootpassword"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - erp-network
+
+networks:
+  erp-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
